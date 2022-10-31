@@ -3,8 +3,11 @@ import numpy as np
 import sys
 import classi as component
 from classi import Dialoghi, Domanda
+from googletrans import Translator
 
 import global_var as gb
+
+t = Translator()
 
 def get_font(size):
     return py.font.Font("font/font.ttf", size)
@@ -20,16 +23,23 @@ def genera_carte():
         
     return c
 
+def Traduci(testo):
+    if gb.language == "it":
+        return testo
+    return t.translate(testo, dest=gb.language, src="it").text
+
 def inizializza():
-    global computer, bancone
+    global computer, bancone, t
     computer = component.Computer()
     bancone = component.Bancone()
     
     for i in range(gb.numero_giocatori):
-        giocatore = component.Player("Giocatore - "+str(i))
+        
+        giocatore = component.Player(Traduci("Player - "+str(i)))
         gb.giocatori.append(giocatore)
     
     # print(gb.giocatori, len(gb.giocatori))
+    print(giocatore.name)
     
     
     # BANCO
@@ -43,6 +53,34 @@ def inizializza():
     gb.giocatori[gb.gioc_attualmente_giocando].cards.append(genera_carte())
     
     gb.updateStats(computer.cards, gb.giocatori[gb.gioc_attualmente_giocando].cards[-1], np.random.choice(gb.nomi_carte), "")
+    
+    if not gb.sceltalingua:
+        
+        Dialoghi(   
+            
+            personaggio = "Senex", 
+            descrizione = "Scegli la dimensione della finestra con 1-2",
+            text_speed = 3
+            
+        ).stampa()
+        
+        
+        
+        if Domanda(    
+
+                    personaggio = "Senex",
+                    descrizione = Traduci("Inserisci la tua lingua (originale - italiano): "),
+                    oggetto = "retro",
+                    risposte = (Traduci("Italiano"), Traduci("Inglese")),
+                    soluzione = 2,
+                    text_speed = 3
+                
+                            
+                ).stampa():
+            
+            gb.language = "en"
+        
+    gb.sceltalingua = True
     
     
     segno = str(np.random.choice(gb.nomi_carte))
@@ -76,11 +114,14 @@ def inizializza():
     
     gb.updateStats(computer.cards, gb.giocatori[gb.gioc_attualmente_giocando].cards[-1], segno, reale)
     
+    
+    
+    
         
     Dialoghi(   
             
             personaggio = "Senex", 
-            descrizione = " Hai "+ testo1 + " e " + testo2,
+            descrizione = Traduci("Hai "+ testo1 + " e " + testo2),
             text_speed = 3
             
         ).stampa()
@@ -108,10 +149,6 @@ def comandi():
 
 def stampa():
     gb.screen.fill(gb.bg_color)
-    
-    computer.render()
-    
-    bancone.render_desk()
                 
                 
 def screen_update():
@@ -137,9 +174,9 @@ def player_recall():
             gb.giocatori[gb.gioc_attualmente_giocando].scelta = Domanda(    
 
                 personaggio = "Senex",
-                descrizione = "Cosa vuoi fare?",
+                descrizione = Traduci("Cosa vuoi fare?"),
                 oggetto = "retro",
-                risposte = ("Resto", "Rischio"),
+                risposte = (Traduci("Resto"), Traduci("Rischio")),
                 soluzione = 2,
                 text_speed = 3
             
@@ -177,7 +214,7 @@ def player_recall():
                     Dialoghi(   
                 
                         personaggio = "Senex", 
-                        descrizione = "Avevi un asso che adesso vale 1",
+                        descrizione = Traduci("Avevi un asso che adesso vale 1"),
                         text_speed = 3
                         
                     ).stampa()
@@ -190,7 +227,7 @@ def player_recall():
             Dialoghi(   
             
                     personaggio = "Senex", 
-                    descrizione =  testo,
+                    descrizione =  Traduci(testo),
                     text_speed = 3
                     
                 ).stampa()
@@ -198,7 +235,9 @@ def player_recall():
             
             if sum(gb.giocatori[gb.gioc_attualmente_giocando].cards) < gb.MAX and gb.giocatori[gb.gioc_attualmente_giocando].scelta:
             
-                algoritmo()
+                algoritmo()      
+                
+        
 
 def computer_recall():
         
@@ -208,16 +247,16 @@ def computer_recall():
                         
             reale = str(np.random.choice(gb.nomi_reali))
             tipo = np.random.choice(gb.nomi_carte)
-            testo = "Il bancone pesca: "+str(computer.cards[-1])+" di "+str(tipo)
+            testo = Traduci("Il bancone pesca: "+str(computer.cards[-1])+" di "+str(tipo))
             
             if computer.cards[-1] == 10 and reale != "":
                 if "regina" in reale and not "" in reale:
-                    testo = "Il bancone pesca: una " + reale + " di " + str(tipo)
+                    testo = Traduci("Il bancone pesca: una " + reale + " di " + str(tipo))
                 else:
-                    testo = "Il bancone pesca: un " + reale + " di " + str(tipo)
+                    testo = Traduci("Il bancone pesca: un " + reale + " di " + str(tipo))
             
             elif computer.cards[-1] == 11:
-                testo = "Il bancone pesca: un asso di " + tipo
+                testo = Traduci("Il bancone pesca: un asso di " + tipo)
                 
             gb.updateStats(computer.cards, computer.cards[-1], tipo, reale)
             
@@ -225,7 +264,7 @@ def computer_recall():
             Dialoghi(   
     
             personaggio = "Senex", 
-            descrizione = testo,
+            descrizione = Traduci(testo),
             text_speed = 3
             
         ).stampa()
@@ -253,7 +292,7 @@ def algoritmo():
     Dialoghi(   
         
                 personaggio = "Senex", 
-                descrizione = "Ora il banco sta per girare le carte!!",
+                descrizione = Traduci("Ora il banco sta per girare le carte!!"),
                 text_speed = 3
                 
             ).stampa()
@@ -290,7 +329,7 @@ def algoritmo():
     Dialoghi(   
         
                 personaggio = "Senex", 
-                descrizione = "Il bancone ha " + testo1 +" e "+ testo2,
+                descrizione = Traduci("Il bancone ha " + testo1 +" e "+ testo2),
                 text_speed = 3
                 
             ).stampa()
@@ -306,7 +345,7 @@ def algoritmo():
     Dialoghi(   
         
                 personaggio = "Senex", 
-                descrizione = "La somma del bancone e': "+str(sum(computer.cards)),
+                descrizione = Traduci("La somma del bancone e': "+str(sum(computer.cards))),
                 text_speed = 3
                 
             ).stampa()
@@ -315,7 +354,7 @@ def algoritmo():
     Dialoghi(   
         
                 personaggio = "Senex", 
-                descrizione = "La tua somma invece e': "+str(sum(gb.giocatori[gb.gioc_attualmente_giocando].cards)),
+                descrizione = Traduci("La tua somma invece e': "+str(sum(gb.giocatori[gb.gioc_attualmente_giocando].cards))),
                 text_speed = 3
                 
             ).stampa()
@@ -334,7 +373,7 @@ def algoritmo():
     Dialoghi(   
 
         personaggio = "Senex", 
-        descrizione = testo,
+        descrizione = Traduci(testo),
         text_speed = 3
         
     ).stampa()
@@ -347,9 +386,9 @@ def algoritmo():
     risposta = Domanda(    
 
             personaggio = "Senex",
-            descrizione = "Vuoi Continuare?",
+            descrizione = Traduci("Vuoi Continuare?"),
             oggetto = "retro",
-            risposte = ("Si", "No"),
+            risposte = (Traduci("Si"), Traduci("No")),
             soluzione = 1,
             text_speed = 3
         

@@ -110,28 +110,7 @@ class Bancone():
                     }
         
         
-        self.bancone = py.image.load("assets/bancone.png").convert_alpha()
-        
-        
-        self.image = self.segni["picche"]
-        
-        self.x = gb.width/2 + 4 * gb.mult
-        self.y = gb.height/2 + 10 * gb.mult
-        
-    def render_desk(self):
-        m = 3
-        
-        immagine = py.transform.scale(self.bancone, (self.bancone.get_width() * gb.mult * m, self.bancone.get_height() * gb.mult * m))
-        gb.screen.blit(immagine, (self.x - immagine.get_width()/2, self.y - immagine.get_height()/2))
-        
-        
-        
-    def render_cards(self, carta):
-        
-        immagine = py.transform.scale(self.segni[carta], (self.segni[carta].get_width() * gb.mult, self.segni[carta].get_height() * gb.mult))
-        
-        gb.screen.blit(immagine, (gb.width/2 - immagine.get_width()/2, gb.height/2 - immagine.get_height()/2))
-        
+        self.bancone = py.image.load("assets/bancone.png").convert_alpha()        
         
 
 class Button():
@@ -506,6 +485,7 @@ class Dialoghi():
             if self.interm >= gb.fps and self.cooldown_interm == gb.fps / 10:
                 self.interm = 0
                 self.cooldown_interm = 0
+                
 
             for event in py.event.get():
 
@@ -515,6 +495,18 @@ class Dialoghi():
 
                     
                 if event.type == py.KEYDOWN:
+                    
+                    if event.key == py.K_1:
+                        gb.mult -= 1
+                        gb.setScreen()
+                        self.__init__(self.personaggio, self.full_description, 3)
+                        gb.updateStats(gb.dati[0], gb.dati[1], gb.dati[2], gb.dati[3])
+                    
+                    if event.key == py.K_2:
+                        gb.mult += 1
+                        gb.setScreen()
+                        self.__init__(self.personaggio, self.full_description, 3)
+                        gb.updateStats(gb.dati[0], gb.dati[1], gb.dati[2], gb.dati[3])
         
                     if event.key == py.K_SPACE or event.key == py.K_RETURN:
         
@@ -910,7 +902,19 @@ class Domanda():
                 if event.type == py.QUIT or keys_pressed[py.K_ESCAPE]:
                     py.quit()
                     sys.exit()
-
+                    
+                
+                if keys_pressed[py.K_1]:
+                    gb.mult -= 1
+                    gb.setScreen()
+                    self.__init__(personaggio = self.personaggio, oggetto = self.oggetto, descrizione = self.full_description, risposte = self.risposte, soluzione = self.number_solution + 1, text_speed = 3)
+                    gb.updateStats(gb.dati[0], gb.dati[1], gb.dati[2], gb.dati[3])
+                    
+                if keys_pressed[py.K_2]:
+                    gb.mult += 1
+                    gb.setScreen()
+                    self.__init__(personaggio = self.personaggio, oggetto = self.oggetto, descrizione = self.full_description, risposte = self.risposte, soluzione = self.number_solution + 1, text_speed = 3)
+                    gb.updateStats(gb.dati[0], gb.dati[1], gb.dati[2], gb.dati[3])
 
                 if keys_pressed[py.K_SPACE] and not self.isFinished:
                     if self.CanIplay_sound:

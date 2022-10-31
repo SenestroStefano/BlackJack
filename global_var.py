@@ -2,42 +2,36 @@ import pygame as py
 from pygame.locals import *
 import screeninfo
 
+language = "it"
+sceltalingua = False
+
 for i in screeninfo.get_monitors():
     def_width, def_height = i.width, i.height
 
+f_width, f_height = 480, 270
 
-fps = 60
-mult = 4
-
-Delta_Time = 1
-
-bg_color = "White"
-
-title_screen = "Black Jack"
-
-
-width, height = 960 * 2, 540 * 2
-
-f_width, f_height = width, height
-
-numero_giocatori = 1
-giocatori = []
-
-gioc_attualmente_giocando = 0
 
 def setScreen():
-    global screen
+    global screen, mult
     global width, height
+    global def_width, def_height
     global f_width, f_height
+    global punteggioC_testo, punteggioP_testo
     
-    width = f_width; height = f_height
-    screen = py.display.set_mode((width, height), py.FULLSCREEN)
+    if mult < 1:
+        mult = 1
+    
+    if mult * f_width > def_width:
+        mult -= 1
+    
+    width, height = 480 * mult, 270 * mult
+    
+    screen = py.display.set_mode((width, height))
     py.display.set_caption(title_screen)
     
-setScreen()
-
-clock = py.time.Clock()
-
+    if width >= def_width:
+        screen = py.display.set_mode((0, 0), py.FULLSCREEN)
+    
 
 def setDefault():
     global MAX
@@ -56,11 +50,8 @@ def setDefault():
     flag_pc = False
 
 
-setDefault()
-
-
 def updateStats(pc_stats, valore, tipo, reale):
-    global last_card
+    global last_card, dati
     global punteggioP_testo, punteggioP_rect
     global punteggioC_testo, punteggioC_rect
     
@@ -78,4 +69,29 @@ def updateStats(pc_stats, valore, tipo, reale):
         val = 1
     last_card = [tipo, val, reale]
     
+    dati = [pc_stats, valore, tipo, reale]
+
+
+fps = 60
+mult = 2
+
+Delta_Time = 1
+
+bg_color = "White"
+
+title_screen = "Black Jack"
+
+picche = py.image.load("assets/picche.png")
+py.display.set_icon(picche)
+
+numero_giocatori = 1
+giocatori = []
+
+gioc_attualmente_giocando = 0
+
+setScreen()
+
+clock = py.time.Clock()
+
+setDefault()
     
