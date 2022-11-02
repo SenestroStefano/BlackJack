@@ -15,6 +15,16 @@ def genera_carte():
         
     return c
 
+
+def controlla_asso():
+    global totale, carta, carte_giocatore
+    if totale > MAX:
+        for carta in carte_giocatore:
+            if carta == 11:
+                carte_giocatore.remove(carta)
+                carte_giocatore.append(1)
+                print("Avevi un asso che adesso vale 1")
+
 Flag_continuare = True
 
 
@@ -48,12 +58,7 @@ while Flag_continuare:
             print("♠️ - BlackJack!1!1! - ♠️\n\n")
             scelta = 0
         
-        if totale > MAX:
-            for carta in carte_giocatore:
-                if carta == 11:
-                    carte_giocatore.remove(carta)
-                    carte_giocatore.append(1)
-                    print("Avevi un asso che adesso vale 1")
+        controlla_asso()
                 
         if totale < MAX:
     
@@ -75,10 +80,7 @@ ___________________
                 carte_giocatore.append(genera_carte())
                 
                 if sum(carte_giocatore) > MAX:
-                    for carta in carte_banco:
-                        if carta == 11:
-                            carte_giocatore.remove(carta)
-                            carte_giocatore.append(1)
+                    controlla_asso()
                 
                 if carte_giocatore[-1] == 10:
                     print("Hai pescato: un/una " +str(rand.choice(nomi_reali)))
